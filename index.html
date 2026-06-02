@@ -8,54 +8,19 @@
 </head>
 <body>
   <main class="app-shell">
-    <section class="hero-card">
-      <div class="hero-copy">
+    <section class="game-card" aria-label="Tic Tac Toe game">
+      <header class="game-header">
         <p class="eyebrow">Tic Tac Toe</p>
-        <h1>Classic play, modern state handling.</h1>
-        <p class="hero-text">A clean browser game with strict turn tracking, win detection, draw handling, and a restart flow that resets everything.</p>
-      </div>
-
-      <div class="status-strip">
-        <div class="status-chip" data-status-chip>
-          <span class="status-label">Turn</span>
+        <div class="turn-pill" aria-live="polite">
+          <span>Turn</span>
           <strong data-turn-label>X</strong>
         </div>
-        <div class="status-copy">
-          <p class="status-title" data-status-title>Player X’s move</p>
-          <p class="status-message" data-status-message>Click any empty square to start the match.</p>
-        </div>
+      </header>
+
+      <div class="board" role="grid" aria-label="Tic Tac Toe board" data-board></div>
+
+      <div class="actions">
         <button class="restart-button" type="button" data-restart>Restart</button>
-      </div>
-
-      <div class="play-area">
-        <section class="board-panel" aria-label="Tic Tac Toe board">
-          <div class="board" role="grid" aria-label="Tic Tac Toe board" data-board></div>
-        </section>
-
-        <aside class="info-panel">
-          <div class="info-block accent-block">
-            <p class="small-label">Game state</p>
-            <h2 data-panel-state>Active play</h2>
-            <p data-panel-detail>Board updates are derived from the current state, so invalid moves are ignored automatically.</p>
-          </div>
-
-          <div class="info-block">
-            <p class="small-label">Rules snapshot</p>
-            <ul>
-              <li>Repeat taps on filled squares do nothing.</li>
-              <li>Winning cells stay highlighted after the final move.</li>
-              <li>A full board with no winner ends in a draw.</li>
-              <li>Restart clears the board and active turn.</li>
-            </ul>
-          </div>
-
-          <div class="info-block tone-block">
-            <p class="small-label">Status summary</p>
-            <div class="summary-row"><span>Active player</span><strong data-summary-turn>X</strong></div>
-            <div class="summary-row"><span>Move count</span><strong data-summary-moves>0</strong></div>
-            <div class="summary-row"><span>Game result</span><strong data-summary-result>Playing</strong></div>
-          </div>
-        </aside>
       </div>
     </section>
   </main>
