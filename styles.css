@@ -47,7 +47,10 @@ button {
   background: linear-gradient(180deg, rgba(12, 18, 34, 0.96), var(--panel));
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(18px);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.game-card.playing {
+  animation: idle-breathe 3.5s ease-in-out infinite;
 }
 
 .status-row {
@@ -130,16 +133,13 @@ button {
 .cell.win {
   background: linear-gradient(180deg, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.18));
   box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.26), 0 0 26px rgba(34, 211, 238, 0.28);
-  animation: win-pop 0.75s ease-in-out infinite alternate;
-}
-
-.actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 22px;
+  animation: win-pop 0.7s ease-in-out infinite alternate;
 }
 
 .restart-button {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
   border: 0;
   border-radius: 999px;
   padding: 12px 22px;
@@ -163,6 +163,17 @@ button {
 
   50% {
     transform: translateY(-1px) scale(1.015);
+  }
+}
+
+@keyframes idle-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-1px) scale(1.005);
   }
 }
 

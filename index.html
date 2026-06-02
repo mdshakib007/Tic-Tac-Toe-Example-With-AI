@@ -11,16 +11,14 @@
     <section class="game-card" aria-label="Tic Tac Toe game">
       <div class="status-row" aria-live="polite">
         <span class="status-label">Turn</span>
-        <strong class="status-value" data-turn-label>X</strong>
+        <strong class="status-value" data-turn-label>User</strong>
       </div>
 
-      <p class="winner-banner" data-winner-banner></p>
+      <p class="winner-banner" data-winner-banner aria-live="polite"></p>
 
       <div class="board" role="grid" aria-label="Tic Tac Toe board" data-board></div>
 
-      <div class="actions">
-        <button class="restart-button" type="button" data-restart>Reset</button>
-      </div>
+      <button class="restart-button" type="button" data-restart>Reset</button>
     </section>
   </main>
 

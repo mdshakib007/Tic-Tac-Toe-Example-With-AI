@@ -21,7 +21,6 @@ const state = {
   status: 'playing',
   winner: null,
   winningLine: [],
-  winnerLabel: '',
 };
 
 function evaluateWinner(board) {
@@ -65,16 +64,16 @@ function render() {
     cell.disabled = state.status !== 'playing' || Boolean(value);
   });
 
-  turnLabel.textContent = state.status === 'playing' ? state.activePlayer : '—';
-
+  turnLabel.textContent = state.status === 'playing' ? (state.activePlayer === 'X' ? 'User' : 'Computer') : '—';
   winnerBanner.textContent = state.status === 'won'
-    ? `${state.winnerLabel} won the game`
+    ? `${state.winner === 'X' ? 'User' : 'Computer'} won the game`
     : state.status === 'draw'
       ? 'Game ended in a draw'
       : '';
 
   gameCard.classList.toggle('won', state.status === 'won');
   gameCard.classList.toggle('draw', state.status === 'draw');
+  gameCard.classList.toggle('playing', state.status === 'playing');
 }
 
 function resetGame() {
@@ -83,7 +82,6 @@ function resetGame() {
   state.status = 'playing';
   state.winner = null;
   state.winningLine = [];
-  state.winnerLabel = '';
   buildBoard();
   render();
 }
@@ -92,8 +90,6 @@ function finishGame(result) {
   state.status = result.winner ? 'won' : 'draw';
   state.winner = result.winner;
   state.winningLine = result.line;
-  state.winnerLabel = result.winner === 'X' ? 'User' : 'Computer';
-  buildBoard();
   render();
 }
 
@@ -116,7 +112,6 @@ function handleMove(index) {
   }
 
   state.activePlayer = state.activePlayer === 'X' ? 'O' : 'X';
-  buildBoard();
   render();
 }
 
