@@ -9,20 +9,17 @@
 <body>
   <main class="app-shell">
     <section class="game-card" aria-label="Tic Tac Toe game">
-      <header class="game-header">
-        <p class="eyebrow">Tic Tac Toe</p>
-        <div class="turn-pill" aria-live="polite">
-          <span>Turn</span>
-          <strong data-turn-label>X</strong>
-        </div>
-      </header>
+      <div class="status-row" aria-live="polite">
+        <span class="status-label">Turn</span>
+        <strong class="status-value" data-turn-label>X</strong>
+      </div>
 
-      <p class="winner-banner" aria-live="polite" data-winner-banner></p>
+      <p class="winner-banner" data-winner-banner></p>
 
       <div class="board" role="grid" aria-label="Tic Tac Toe board" data-board></div>
 
       <div class="actions">
-        <button class="restart-button" type="button" data-restart>Restart</button>
+        <button class="restart-button" type="button" data-restart>Reset</button>
       </div>
     </section>
   </main>

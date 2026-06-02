@@ -21,6 +21,7 @@ const state = {
   status: 'playing',
   winner: null,
   winningLine: [],
+  winnerLabel: '',
 };
 
 function evaluateWinner(board) {
@@ -67,7 +68,7 @@ function render() {
   turnLabel.textContent = state.status === 'playing' ? state.activePlayer : '—';
 
   winnerBanner.textContent = state.status === 'won'
-    ? `${state.winner === 'X' ? 'User' : 'Computer'} won the game`
+    ? `${state.winnerLabel} won the game`
     : state.status === 'draw'
       ? 'Game ended in a draw'
       : '';
@@ -82,6 +83,7 @@ function resetGame() {
   state.status = 'playing';
   state.winner = null;
   state.winningLine = [];
+  state.winnerLabel = '';
   buildBoard();
   render();
 }
@@ -90,6 +92,7 @@ function finishGame(result) {
   state.status = result.winner ? 'won' : 'draw';
   state.winner = result.winner;
   state.winningLine = result.line;
+  state.winnerLabel = result.winner === 'X' ? 'User' : 'Computer';
   buildBoard();
   render();
 }
