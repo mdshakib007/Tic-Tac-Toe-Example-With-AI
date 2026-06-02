@@ -64,9 +64,9 @@ function render() {
     cell.disabled = state.status !== 'playing' || Boolean(value);
   });
 
-  turnLabel.textContent = state.status === 'playing' ? (state.activePlayer === 'X' ? 'User' : 'Computer') : '—';
+  turnLabel.textContent = state.status === 'playing' ? (state.activePlayer === 'X' ? 'Your turn' : 'Computer turn') : 'Game over';
   winnerBanner.textContent = state.status === 'won'
-    ? `${state.winner === 'X' ? 'User' : 'Computer'} won the game`
+    ? `${state.winner === 'X' ? 'You won!' : 'Computer won!'}`
     : state.status === 'draw'
       ? 'Game ended in a draw'
       : '';
