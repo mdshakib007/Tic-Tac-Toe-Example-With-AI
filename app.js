@@ -1,6 +1,8 @@
 const boardElement = document.querySelector('[data-board]');
 const restartButton = document.querySelector('[data-restart]');
 const turnLabel = document.querySelector('[data-turn-label]');
+const winnerBanner = document.querySelector('[data-winner-banner]');
+const gameCard = document.querySelector('.game-card');
 
 const WIN_LINES = [
   [0, 1, 2],
@@ -17,6 +19,7 @@ const state = {
   board: Array(9).fill(null),
   activePlayer: 'X',
   status: 'playing',
+  winner: null,
   winningLine: [],
 };
 
@@ -24,11 +27,11 @@ function evaluateWinner(board) {
   for (const line of WIN_LINES) {
     const [a, b, c] = line;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return line;
+      return { winner: board[a], line };
     }
   }
 
-  return [];
+  return null;
 }
 
 function buildBoard() {
@@ -61,14 +64,32 @@ function render() {
     cell.disabled = state.status !== 'playing' || Boolean(value);
   });
 
-  turnLabel.textContent = state.activePlayer;
+  turnLabel.textContent = state.status === 'playing' ? state.activePlayer : '—';
+
+  winnerBanner.textContent = state.status === 'won'
+    ? `${state.winner === 'X' ? 'User' : 'Computer'} won the game`
+    : state.status === 'draw'
+      ? 'Game ended in a draw'
+      : '';
+
+  gameCard.classList.toggle('won', state.status === 'won');
+  gameCard.classList.toggle('draw', state.status === 'draw');
 }
 
 function resetGame() {
   state.board = Array(9).fill(null);
   state.activePlayer = 'X';
   state.status = 'playing';
+  state.winner = null;
   state.winningLine = [];
+  buildBoard();
+  render();
+}
+
+function finishGame(result) {
+  state.status = result.winner ? 'won' : 'draw';
+  state.winner = result.winner;
+  state.winningLine = result.line;
   buildBoard();
   render();
 }
@@ -79,20 +100,15 @@ function handleMove(index) {
   }
 
   state.board[index] = state.activePlayer;
-  const winningLine = evaluateWinner(state.board);
+  const winningResult = evaluateWinner(state.board);
 
-  if (winningLine.length) {
-    state.status = 'finished';
-    state.winningLine = winningLine;
-    buildBoard();
-    render();
+  if (winningResult) {
+    finishGame(winningResult);
     return;
   }
 
   if (state.board.every(Boolean)) {
-    state.status = 'finished';
-    buildBoard();
-    render();
+    finishGame({ winner: null, line: [] });
     return;
   }
 
