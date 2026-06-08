@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic Tac Toe AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-1: #050816;
+      --bg-2: #0c1430;
+      --panel: rgba(12, 18, 43, 0.72);
+      --panel-border: rgba(144, 161, 255, 0.2);
+      --text: #eef2ff;
+      --muted: #9ea8d7;
+      --accent: #8b5cf6;
+      --accent-2: #35d3ff;
+      --x: #a78bfa;
+      --o: #66e3ff;
+      --win: #7cfdc7;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(64, 64, 255, 0.3), transparent 35%),
+        radial-gradient(circle at 20% 20%, rgba(53, 211, 255, 0.12), transparent 25%),
+        linear-gradient(180deg, #040816 0%, #081020 100%);
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      min-height: 720px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      padding: 28px;
+      border: 1px solid rgba(140, 150, 255, 0.18);
+      border-radius: 32px;
+      background: linear-gradient(145deg, rgba(11, 17, 39, 0.88), rgba(8, 12, 28, 0.92));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 10px 4px 6px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(120, 140, 255, 0.22);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 0 16px rgba(90, 214, 255, 0.9);
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(3rem, 8vw, 5.8rem);
+      line-height: 0.94;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: block;
+      background: linear-gradient(135deg, #f8faff 0%, #8ad7ff 38%, #a78bfa 72%, #f0f4ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .copy {
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chip, .panel-card {
+      border: 1px solid rgba(140, 150, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .chip {
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 96px;
+    }
+
+    .chip .label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      margin-bottom: 10px;
+    }
+
+    .chip .value {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+      border-radius: 28px;
+      border: 1px solid rgba(140, 150, 255, 0.2);
+      background: linear-gradient(180deg, rgba(12, 17, 40, 0.92), rgba(8, 12, 28, 0.94));
+    }
+
+    .panel-card {
+      border-radius: 24px;
+      padding: 18px;
+    }
+
+    .panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .status {
+      display: grid;
+      gap: 6px;
+    }
+
+    .status strong {
+      font-size: 1.05rem;
+    }
+
+    .status span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .button {
+      border: 0;
+      color: #ffffff;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 35px rgba(77, 132, 255, 0.28);
+      cursor: pointer;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      aspect-ratio: 1;
+      padding: 10px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(140, 150, 255, 0.15);
+    }
+
+    .cell {
+      border: 1px solid rgba(149, 160, 255, 0.18);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      color: var(--text);
+      font-size: clamp(2.2rem, 7vw, 4rem);
+      font-weight: 800;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      min-height: 110px;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .cell:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: rgba(135, 210, 255, 0.42);
+      box-shadow: 0 0 0 1px rgba(135, 210, 255, 0.12), 0 12px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .cell:disabled {
+      cursor: not-allowed;
+      opacity: 0.96;
+    }
+
+    .cell.x { color: var(--x); }
+    .cell.o { color: var(--o); }
+    .cell.win {
+      border-color: rgba(124, 253, 199, 0.75);
+      box-shadow: inset 0 0 0 1px rgba(124, 253, 199, 0.4), 0 0 28px rgba(124, 253, 199, 0.13);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .hero {
+        gap: 18px;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .shell { padding: 18px; border-radius: 24px; }
+      .panel { padding: 14px; }
+      .panel-top { flex-direction: column; align-items: stretch; }
+      .button { width: 100%; }
+      .footer { flex-direction: column; }
+      .cell { min-height: 92px; border-radius: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Single Player / AI Opponent</div>
+        <h1><span>Tic Tac</span><span>Toe AI</span></h1>
+        <p class="copy">Play as X against an automatic O opponent. The board locks after a win or draw, and every restart cleanly resets the round.</p>
+      </div>
+
+      <div class="meta">
+        <div class="chip">
+          <div class="label">Turn</div>
+          <div class="value" id="turnLabel">Your move as X</div>
+        </div>
+        <div class="chip">
+          <div class="label">State</div>
+          <div class="value" id="stateLabel">Match in progress</div>
+        </div>
+        <div class="chip">
+          <div class="label">Controls</div>
+          <div class="value">Click a tile, then let the AI respond.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-card panel-top">
+        <div class="status">
+          <strong id="statusTitle">Your turn</strong>
+          <span id="statusDetail">Choose an empty cell to start the match.</span>
+        </div>
+        <button class="button" id="restartButton" type="button">Restart game</button>
+      </div>
+
+      <div class="board" id="board" aria-label="Tic Tac Toe board"></div>
+
+      <div class="footer">
+        <span>X is the human player.</span>
+        <span>O moves automatically.</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const boardElement = document.getElementById('board');
+    const restartButton = document.getElementById('restartButton');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDetail = document.getElementById('statusDetail');
+    const turnLabel = document.getElementById('turnLabel');
+    const stateLabel = document.getElementById('stateLabel');
+
+    const winningLines = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    const state = {
+      board: Array(9).fill(''),
+      gameOver: false,
+      locked: false,
+      winner: null,
+      line: []
+    };
+
+    function renderBoard() {
+      boardElement.innerHTML = '';
+      state.board.forEach((value, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `cell ${value ? value.toLowerCase() : ''}`;
+        button.dataset.index = String(index);
+        button.textContent = value;
+        button.disabled = state.gameOver || state.locked || Boolean(value);
+        if (state.line.includes(index)) {
+          button.classList.add('win');
+        }
+        button.addEventListener('click', onCellClick);
+        boardElement.appendChild(button);
+      });
+    }
+
+    function getWinner(board) {
+      for (const line of winningLines) {
+        const [a, b, c] = line;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          return { player: board[a], line };
+        }
+      }
+      return null;
+    }
+
+    function getAvailableMoves(board) {
+      return board.flatMap((value, index) => (value ? [] : [index]));
+    }
+
+    function chooseMove(board) {
+      const winner = getWinner(board);
+      if (winner) return null;
+
+      const available = getAvailableMoves(board);
+      if (!available.length) return null;
+
+      const lines = winningLines;
+      const pick = (player) => {
+        for (const line of lines) {
+          const values = line.map((index) => board[index]);
+          const countPlayer = values.filter((value) => value === player).length;
+          const countEmpty = values.filter((value) => !value).length;
+          if (countPlayer === 2 && countEmpty === 1) {
+            return line.find((index) => !board[index]);
+          }
+        }
+        return null;
+      };
+
+      const winMove = pick('O');
+      if (winMove !== null) return winMove;
+
+      const blockMove = pick('X');
+      if (blockMove !== null) return blockMove;
+
+      if (!board[4]) return 4;
+      const corners = [0, 2, 6, 8].filter((index) => !board[index]);
+      if (corners.length) return corners[0];
+      return available[0];
+    }
+
+    function updateStatus(title, detail, turn, stateText) {
+      statusTitle.textContent = title;
+      statusDetail.textContent = detail;
+      turnLabel.textContent = turn;
+      stateLabel.textContent = stateText;
+    }
+
+    function finishRound(result) {
+      state.gameOver = true;
+      state.locked = false;
+      state.winner = result.player;
+      state.line = result.line;
+
+      if (result.player === 'X') {
+        updateStatus('You win', 'Great move — the board is locked now.', 'Round finished', 'Human victory');
+      } else {
+        updateStatus('Computer wins', 'The AI found a winning line.', 'Round finished', 'AI victory');
+      }
+    }
+
+    function markDraw() {
+      state.gameOver = true;
+      state.locked = false;
+      state.winner = null;
+      state.line = [];
+      updateStatus('Draw game', 'No moves left — restart to play again.', 'Round finished', 'Stalemate');
+    }
+
+    function syncAfterMove() {
+      const winner = getWinner(state.board);
+      if (winner) {
+        finishRound(winner);
+        return;
+      }
+
+      if (getAvailableMoves(state.board).length === 0) {
+        markDraw();
+        return;
+      }
+
+      state.locked = false;
+      updateStatus('Computer thinking', 'The AI is choosing a response move.', 'Computer turn', 'Match in progress');
+      setTimeout(() => {
+        if (state.gameOver) return;
+        const move = chooseMove(state.board);
+        if (move === null) {
+          markDraw();
+          renderBoard();
+          return;
+        }
+        state.board[move] = 'O';
+        const computerWinner = getWinner(state.board);
+        if (computerWinner) {
+          finishRound(computerWinner);
+        } else if (getAvailableMoves(state.board).length === 0) {
+          markDraw();
+        } else {
+          updateStatus('Your turn', 'Pick the next available tile.', 'Your move as X', 'Match in progress');
+        }
+        renderBoard();
+      }, 240);
+    }
+
+    function onCellClick(event) {
+      const index = Number(event.currentTarget.dataset.index);
+      if (state.gameOver || state.locked || state.board[index]) return;
+
+      state.board[index] = 'X';
+      state.locked = true;
+      renderBoard();
+      syncAfterMove();
+    }
+
+    function resetGame() {
+      state.board = Array(9).fill('');
+      state.gameOver = false;
+      state.locked = false;
+      state.winner = null;
+      state.line = [];
+      updateStatus('Your turn', 'Choose an empty cell to start the match.', 'Your move as X', 'Match in progress');
+      renderBoard();
+    }
+
+    restartButton.addEventListener('click', resetGame);
+    resetGame();
+  </script>
+</body>
+</html>
