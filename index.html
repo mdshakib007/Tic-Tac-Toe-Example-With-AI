@@ -433,11 +433,6 @@
     }
 
     function syncAfterMove() {
-      if (state.pendingMove !== null) {
-        clearTimeout(state.pendingMove);
-        state.pendingMove = null;
-      }
-
       const winner = getWinner(state.board);
       if (winner) {
         finishRound(winner);
