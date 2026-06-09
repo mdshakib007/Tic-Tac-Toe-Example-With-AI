@@ -1,5 +1,5 @@
 # Tic-Tac-Toe-Example-With-AI
-A single-page browser Tic Tac Toe game with a human X player and an automatic O opponent.
+A compact single-page browser Tic Tac Toe game with a human X player and an automatic O opponent.
 
 ## Run
 Open `index.html` in a browser.
