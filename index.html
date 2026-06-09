@@ -329,7 +329,8 @@
       gameOver: false,
       locked: false,
       winner: null,
-      line: []
+      line: [],
+      pendingMove: null
     };
 
     function renderBoard() {
@@ -405,6 +406,10 @@
     function finishRound(result) {
       state.gameOver = true;
       state.locked = false;
+      if (state.pendingMove !== null) {
+        clearTimeout(state.pendingMove);
+        state.pendingMove = null;
+      }
       state.winner = result.player;
       state.line = result.line;
 
@@ -418,6 +423,10 @@
     function markDraw() {
       state.gameOver = true;
       state.locked = false;
+      if (state.pendingMove !== null) {
+        clearTimeout(state.pendingMove);
+        state.pendingMove = null;
+      }
       state.winner = null;
       state.line = [];
       updateStatus('Draw game', 'No moves left — restart to play again.', 'Round finished', 'Stalemate');
@@ -437,7 +446,8 @@
 
       state.locked = false;
       updateStatus('Computer thinking', 'The AI is choosing a response move.', 'Computer turn', 'Match in progress');
-      setTimeout(() => {
+      state.pendingMove = setTimeout(() => {
+        state.pendingMove = null;
         if (state.gameOver) return;
         const move = chooseMove(state.board);
         if (move === null) {
@@ -469,6 +479,10 @@
     }
 
     function resetGame() {
+      if (state.pendingMove !== null) {
+        clearTimeout(state.pendingMove);
+        state.pendingMove = null;
+      }
       state.board = Array(9).fill('');
       state.gameOver = false;
       state.locked = false;
